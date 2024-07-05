@@ -1,5 +1,0 @@
-easy:1
-medium:41
-hard:90
-so hard:120
-

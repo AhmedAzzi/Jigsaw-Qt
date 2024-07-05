@@ -19,7 +19,6 @@ SetLevel::SetLevel(QWidget *parent)
     imagePanel(nullptr), dim(3), second(30), currentImage(0)
 {
 
-    QString imgsPath ="../../resources/images/";
     setFixedSize(QGuiApplication::primaryScreen()->geometry().width(), QGuiApplication::primaryScreen()->geometry().height());
     setPalette(QPalette(QPalette::Window, QColor(QString("#d3c3b6"))));
 
@@ -29,7 +28,7 @@ SetLevel::SetLevel(QWidget *parent)
     intro->setAlignment(Qt::AlignCenter);
 
     QPushButton *fileChooserButton = new QPushButton(this);
-    fileChooserButton->setIcon(QIcon(imgsPath + "choose.png"));
+    fileChooserButton->setIcon(QIcon(":/resources/images/choose.png"));
     fileChooserButton->setStyleSheet("border: none; background: transparent;");
     fileChooserButton->setIconSize(QSize(60, 60));
     fileChooserButton->setGeometry(width() / 2 + 150, 10, 100, 60); // Absolute positioning
@@ -56,7 +55,7 @@ SetLevel::SetLevel(QWidget *parent)
     imageLabel->setAlignment(Qt::AlignCenter);
 
     prevButton = new QPushButton(this);
-    prevButton->setIcon(QIcon(imgsPath + "prev.png"));
+    prevButton->setIcon(QIcon(":/resources/images/prev.png"));
     prevButton->setStyleSheet("border: none; background: transparent;");
     prevButton->setIconSize(QSize(80, 100));
     prevButton->setFixedSize(100, 100);
@@ -72,7 +71,7 @@ SetLevel::SetLevel(QWidget *parent)
     });
 
     nextButton = new QPushButton(this);
-    nextButton->setIcon(QIcon(imgsPath + "next.png"));
+    nextButton->setIcon(QIcon(":/resources/images/next.png"));
     nextButton->setStyleSheet("border: none; background: transparent;");
     nextButton->setIconSize(QSize(80, 100));
     nextButton->setFixedSize(100, 100);
@@ -97,10 +96,10 @@ SetLevel::SetLevel(QWidget *parent)
         "    height: 30px;"
         "}"
         "QRadioButton::indicator::unchecked {"
-        "    image: url(" + imgsPath + "r1_c.png);"
+        "    image: url(:/resources/images/r1_c.png);"
                      "}"
                      "QRadioButton::indicator::checked {"
-                     "    image: url(" + imgsPath + "r1_o.png);"
+                     "    image: url(:/resources/images/r1_o.png);"
                      "}"
         );
 
@@ -139,7 +138,7 @@ SetLevel::SetLevel(QWidget *parent)
 
 
     play = new QPushButton(this);
-    play->setIcon(QIcon(imgsPath + "play1.png"));
+    play->setIcon(QIcon(":/resources/images/play1.png"));
     play->setStyleSheet("border: none; background: transparent;");
     play->setIconSize(QSize(250, 180));
     play->setFixedSize(250, 60);
@@ -151,7 +150,7 @@ SetLevel::SetLevel(QWidget *parent)
     });
 
     back = new QPushButton(this);
-    back->setIcon(QIcon(imgsPath + "back.png"));
+    back->setIcon(QIcon(":/resources/images/back.png"));
     back->setStyleSheet("border: none; background: transparent;");
     back->setIconSize(QSize(250, 180));
     back->setFixedSize(250, 60);
@@ -162,9 +161,9 @@ SetLevel::SetLevel(QWidget *parent)
         close();
     });
 
-    imageFiles <<  imgsPath + "cow.jpg"
-               <<  imgsPath + "dolphin.jpg"
-               <<  imgsPath + "Nasa.jpg";
+    imageFiles <<  ":/resources/images/cow.jpg"
+               <<  ":/resources/images/dolphin.jpg"
+               <<  ":/resources/images/Nasa.jpg";
 
 
     QPixmap image(imageFiles[currentImage]);

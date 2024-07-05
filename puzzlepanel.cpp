@@ -12,18 +12,13 @@
 #include <QMessageBox>
 #include <QSequentialAnimationGroup>
 #include <QPropertyAnimation>
+#include <QStandardPaths>
+#include <QDir>
 
 PuzzlePanel::PuzzlePanel(int dim, const QString& name, int second, QWidget *parent)
     : QWidget(parent), firstClick(false), lastClicked(0), name(name), test(nullptr), remainingTime(second), startingTime(second), dim(dim), beep(nullptr), winner(nullptr)
 {
     setFixedSize(QGuiApplication::primaryScreen()->geometry().width(), QGuiApplication::primaryScreen()->geometry().height());
-
-    QString imgsPath = "../../resources/images/";
-
-
-    // player->setSource(QUrl(audioPath + "qrc:/sounds/click.wav")); // Adjust path to your sound file
-
-
 
 
     QPixmap image(name);
@@ -32,7 +27,7 @@ PuzzlePanel::PuzzlePanel(int dim, const QString& name, int second, QWidget *pare
     img_preview->setPixmap(image.scaled(280, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     back = new QPushButton(this);
-    back->setIcon(QIcon(imgsPath + "back.png"));
+    back->setIcon(QIcon(":/resources/images/back.png"));
     back->setStyleSheet("border: none; background: transparent;");
     back->setIconSize(QSize(250, 180));
     back->setFixedSize(100, 60);
@@ -60,7 +55,11 @@ PuzzlePanel::PuzzlePanel(int dim, const QString& name, int second, QWidget *pare
         {6, "so hard"}
     };
 
-    QFile file("../../best_time.txt");
+    QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QString filePath = homeDir + "/best_time/best_time.txt";
+
+    // Read the file
+    QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Failed to open file:" << file.errorString();
     }
@@ -94,10 +93,10 @@ PuzzlePanel::PuzzlePanel(int dim, const QString& name, int second, QWidget *pare
         "    height: 60px;"
         "}"
         "QRadioButton::indicator::unchecked {"
-        "    image: url(" + imgsPath + "pause.png);"
+        "    image: url(:/resources/images/pause.png);"
                      "}"
                      "QRadioButton::indicator::checked {"
-                     "    image: url(" + imgsPath + "play.png);"
+                     "    image: url(:/resources/images/play.png);"
                      "}"
         "* {"
              "background-color: #d3c3b6;"
@@ -123,7 +122,7 @@ PuzzlePanel::PuzzlePanel(int dim, const QString& name, int second, QWidget *pare
     });
 
     reset = new QPushButton(this);
-    reset->setIcon(QIcon(imgsPath + "reset.png"));
+    reset->setIcon(QIcon(":/resources/images/reset.png"));
     reset->setStyleSheet("border: none;");
     reset->setIconSize(QSize(60, 60));
     reset->setGeometry(width() - reset->width() * 1.5, 5, 40, 40);
@@ -152,19 +151,19 @@ PuzzlePanel::PuzzlePanel(int dim, const QString& name, int second, QWidget *pare
 
     one = new QLabel("", this);
     one->setGeometry(QGuiApplication::primaryScreen()->geometry().width() - 250, 260, 280, 200);
-    QPixmap one_img(imgsPath + "01.png");
+    QPixmap one_img(":/resources/images/01.png");
     one->setAttribute(Qt::WA_TranslucentBackground);
     one->setPixmap(one_img.scaled(280, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     two = new QLabel("", this);
     two->setGeometry(QGuiApplication::primaryScreen()->geometry().width() - 320, 470, 280, 200);
-    QPixmap two_img(imgsPath + "02.png");
+    QPixmap two_img(":/resources/images/02.png");
     two->setAttribute(Qt::WA_TranslucentBackground);
     two->setPixmap(two_img.scaled(280, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     three = new QLabel("", this);
     three->setGeometry(QGuiApplication::primaryScreen()->geometry().width() - 160, 470, 280, 200);
-    QPixmap three_img(imgsPath + "03.png");
+    QPixmap three_img(":/resources/images/03.png");
     three->setAttribute(Qt::WA_TranslucentBackground);
     three->setPixmap(three_img.scaled(280, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
@@ -222,8 +221,7 @@ void PuzzlePanel::handleClick()
     QPushButton *button = qobject_cast<QPushButton*>(sender());
     int buttonIndex = buttons.indexOf(button);
 
-    QString audioPath = "../../resources/audio/";
-    beep.setSource(QUrl::fromLocalFile(audioPath + "beep2.wav"));
+    beep.setSource(QUrl::fromLocalFile(":/resources/audio/beep2.wav"));
     beep.play();
 
     if (firstClick) {
@@ -253,7 +251,6 @@ void PuzzlePanel::handleClick()
 void PuzzlePanel::checkWin()
 {
     bool solved = true;
-    QString imgsPath_ = "../../resources/images/";
     for (int i = 0; i < buttons.size(); ++i) {
         QPoint currentPos = buttons[i]->property("position").toPoint();
         if (currentPos != solution[i]) {
@@ -264,9 +261,7 @@ void PuzzlePanel::checkWin()
     if (solved) {
         timer->stop();
 
-
-        QString audioPath = "../../resources/audio/";
-        winner.setSource(QUrl::fromLocalFile(audioPath + "winner.wav"));
+        winner.setSource(QUrl::fromLocalFile(":/resources/audio/winner.wav"));
         winner.play();
         winner.setLoopCount(3);
 
@@ -281,18 +276,38 @@ void PuzzlePanel::checkWin()
         };
 
         QString targetDifficulty = difficultyMap.value(dim);
-        QFile file("../../best_time.txt");
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            qDebug() << "Failed to open file for reading:" << file.errorString();
+        QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+        QString bestTimeDirPath = homeDir + "/best_time";
+
+        // Ensure the directory exists
+        QDir dir;
+        if (!dir.exists(bestTimeDirPath)) {
+            if (!dir.mkpath(bestTimeDirPath)) {
+                qDebug() << "Failed to create directory:" << bestTimeDirPath;
+                return;
+            }
         }
 
+        QString filePath = bestTimeDirPath + "/best_time.txt";
+
+        // Read the existing file
+        QFile file(filePath);
         QList<QString> lines;
-        QTextStream in(&file);
-        while (!in.atEnd()) {
-            lines.append(in.readLine());
-        }
-        file.close();
+        if (file.exists()) {
+            if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                qDebug() << "Failed to open file for reading:" << file.errorString();
+                return;
+            }
 
+            QTextStream in(&file);
+            while (!in.atEnd()) {
+                lines.append(in.readLine());
+            }
+            file.close();
+        }
+
+        // Update the lines with the new value
+        bool found = false;
         for (int i = 0; i < lines.size(); ++i) {
             QString line = lines[i];
             if (line.startsWith(targetDifficulty + ":")) {
@@ -302,14 +317,21 @@ void PuzzlePanel::checkWin()
                     if (newValue < currentValue) {
                         lines[i] = targetDifficulty + ":" + QString::number(newValue);
                     }
+                    found = true;
                     break;
                 }
             }
         }
 
+        // If the target difficulty was not found, add it
+        if (!found) {
+            lines.append(targetDifficulty + ":" + QString::number(newValue));
+        }
+
         // Write the modified list back to the file
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             qDebug() << "Failed to open file for writing:" << file.errorString();
+            return;
         }
 
         QTextStream out(&file);
@@ -317,7 +339,6 @@ void PuzzlePanel::checkWin()
             out << line << "\n";
         }
         file.close();
-
 
         QWidget *winWidget = new QWidget(this);
         winWidget->setGeometry((QGuiApplication::primaryScreen()->geometry().width()  - 850) / 2 - 200, (QGuiApplication::primaryScreen()->geometry().height()  - 580) / 2 - 20 , 950, 580);
@@ -333,7 +354,7 @@ void PuzzlePanel::checkWin()
 
         // Display the GIF
         QLabel *gifLabel = new QLabel(winWidget);
-        QMovie *gifMovie = new QMovie(imgsPath_ + "bg.gif");
+        QMovie *gifMovie = new QMovie(":/resources/images/bg.gif");
         gifLabel->setMovie(gifMovie);
         gifLabel->setAlignment(Qt::AlignCenter);
         gifLabel->setStyleSheet("background: transparent");

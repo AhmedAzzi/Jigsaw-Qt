@@ -3,6 +3,8 @@
 #include "setlevel.h" // Replace with actual header file name
 #include "gifdisplay.h"
 #include "about.h"
+#include <QStandardPaths>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), bg(new QLabel("", this)), logo(new QLabel("", this)), start(nullptr),  demo(nullptr),
@@ -11,12 +13,37 @@ MainWindow::MainWindow(QWidget *parent)
     setPalette(QPalette(QPalette::Window, QColor(QString("#d6d9df"))));
     setFixedSize(700, 600-40);
 
+    QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QString bestTimeDirPath = homeDir + "/best_time";
 
+    // Ensure the directory exists
+    QDir dir;
+    if (!dir.exists(bestTimeDirPath)) {
+        if (!dir.mkpath(bestTimeDirPath)) {
+            qDebug() << "Failed to create directory:" << bestTimeDirPath;
+        }
+    }
+
+    QString filePath = bestTimeDirPath + "/best_time.txt";
+    QFile file(filePath);
+
+    // Check if the file exists; if not, create it with default values
+    if (!file.exists()) {
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            qDebug() << "Failed to open file for writing:" << file.errorString();
+        }
+
+        QTextStream out(&file);
+        out << "easy:30\n";
+        out << "medium:60\n";
+        out << "hard:90\n";
+        out << "so hard:120\n";
+        file.close();
+    }
     setCentralWidget(bg);
 
-    QString imgsPath = "../../resources/images/";
 
-    QPixmap bg_img(imgsPath + "bg4.jpg");
+    QPixmap bg_img(":/resources/images/bg4.jpg");
     if (bg_img.isNull()) {
         qDebug() << "Failed to load image";
     } else {
@@ -24,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
 
-    QPixmap logo_img(imgsPath + "icon.png");
+    QPixmap logo_img(":/resources/images/icon.png");
     if (logo_img.isNull()) {
         qDebug() << "Failed to load image";
     } else {
@@ -34,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     start = new QPushButton(this);
-    start->setIcon(QIcon(imgsPath + "start2.png"));
+    start->setIcon(QIcon(":/resources/images/start2.png"));
     start->setStyleSheet("border: none; background: transparent;");
     start->setIconSize(QSize(280, 200));
     start->setFixedSize(120, 60);
@@ -46,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     demo = new QPushButton(this);
-    demo->setIcon(QIcon(imgsPath + "demo.png"));
+    demo->setIcon(QIcon(":/resources/images/demo.png"));
     demo->setStyleSheet("border: none; background: transparent;");
     demo->setIconSize(QSize(280, 200));
     demo->setFixedSize(120, 60);
@@ -54,14 +81,14 @@ MainWindow::MainWindow(QWidget *parent)
     demo->move(width() - 220, 320 - 40 + 60);
     connect(demo, &QPushButton::clicked, this, [=]() { // Replace with actual path
 
-        GifDisplay *gifWindow = new GifDisplay(imgsPath + "demo4.gif", nullptr);
+        GifDisplay *gifWindow = new GifDisplay(":/resources/images/demo4.gif", nullptr);
         gifWindow->setAttribute(Qt::WA_DeleteOnClose); // Delete on close to avoid memory leak
 
         gifWindow->exec(); // Display the window as modal
     });
 
     about = new QPushButton(this);
-    about->setIcon(QIcon(imgsPath + "about.png"));
+    about->setIcon(QIcon(":/resources/images/about.png"));
     about->setStyleSheet("border: none; background: transparent;");
     about->setIconSize(QSize(280, 200));
     about->setFixedSize(120, 60);
@@ -72,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     exit = new QPushButton(this);
-    exit->setIcon(QIcon(imgsPath + "exit.png"));
+    exit->setIcon(QIcon(":/resources/images/exit.png"));
     exit->setStyleSheet("border: none; background: transparent;");
     exit->setIconSize(QSize(280, 200));
     exit->setFixedSize(120, 60);

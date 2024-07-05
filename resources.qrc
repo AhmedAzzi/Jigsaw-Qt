@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Images -->
+        <file>resources/images/01.png</file>
+        <file>resources/images/1reset.png</file>
+        <file>resources/images/02.png</file>
+        <file>resources/images/03.png</file>
+        <file>resources/images/about.png</file>
+        <file>resources/images/back.png</file>
+        <file>resources/images/bg.gif</file>
+        <file>resources/images/bg2.gif</file>
+        <file>resources/images/bg4.jpg</file>
+        <file>resources/images/choose.png</file>
+        <file>resources/images/cow.jpg</file>
+        <file>resources/images/demo.png</file>
+        <file>resources/images/demo4.gif</file>
+        <file>resources/images/dolphin.jpg</file>
+        <file>resources/images/exit.png</file>
+        <file>resources/images/f.jpg</file>
+        <file>resources/images/icon.png</file>
+        <file>resources/images/Nasa.jpg</file>
+        <file>resources/images/next.png</file>
+        <file>resources/images/pause.png</file>
+        <file>resources/images/play.png</file>
+        <file>resources/images/play1.png</file>
+        <file>resources/images/prev.png</file>
+        <file>resources/images/r1_c.png</file>
+        <file>resources/images/r1_o.png</file>
+        <file>resources/images/reset.png</file>
+        <file>resources/images/start2.png</file>
+        <!-- Audio -->
+        <file>resources/audio/beep2.wav</file>
+        <file>resources/audio/winner.wav</file>
+        <!-- Txt File -->
+
+    </qresource>
+</RCC>
